@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "Vercel Deploy",
+  "version": "1.0.0",
+  "content_scripts": [
+    {
+      "matches": ["https://www.github.com/*"],
+      "js": ["Content.js"]
+    }
+  ]
+}
