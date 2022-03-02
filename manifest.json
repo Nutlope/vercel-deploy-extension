@@ -8,6 +8,7 @@
     "default_icon": "vercel-logo.png"
   },
   "background": {
+    "matches": ["https://github.com/*"],
     "service_worker": "background.js"
   }
 }
