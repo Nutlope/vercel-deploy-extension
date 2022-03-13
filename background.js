@@ -15,28 +15,24 @@ chrome.action.onClicked.addListener((tab) => {
     repoName = repoName.substr(0, repoName.indexOf("tree/") - 1);
   }
 
-  chrome.tabs.update({
-    url: vercelUrl,
-  });
+  // Grab .env.example filepath from repo
+  let envFile = `https://raw.githubusercontent.com/${repoName}/main/.env.example`;
 
-  //   // Grab .env.example filepath from repo
-  //   let envFile = `https://raw.githubusercontent.com/${repoName}/.env.example`; // shouldn't be a main here
-
-  //   fetch(envFile)
-  //     .then((res) => res.text())
-  //     // if the .env file exists, open Vercel deploy with required env variables
-  //     .then((text) => {
-  //       let replaced = text.replace(/\s/g, "");
-  //       let newReplaced = replaced.replace(/=/g, ",");
-  //       vercelUrl += `&env=${newReplaced}`;
-  //       chrome.tabs.update({
-  //         url: vercelUrl,
-  //       });
-  //     })
-  //     // if the .example.env file doesn't exist, open Vercel deploy with no env variables
-  //     .catch((err) => {
-  //       chrome.tabs.update({
-  //         url: vercelUrl,
-  //       });
-  //     });
+  fetch(envFile)
+    .then((res) => res.text())
+    // if the .env file exists, open Vercel deploy with required env variables
+    .then((text) => {
+      let replaced = text.replace(/\s/g, "");
+      let newReplaced = replaced.replace(/=/g, ",");
+      vercelUrl += `&env=${newReplaced}`;
+      chrome.tabs.update({
+        url: vercelUrl,
+      });
+    })
+    // if the .example.env file doesn't exist, open Vercel deploy with no env variables
+    .catch((err) => {
+      chrome.tabs.update({
+        url: vercelUrl,
+      });
+    });
 });
