@@ -22,9 +22,14 @@ chrome.action.onClicked.addListener((tab) => {
     .then((res) => res.text())
     // if the .env file exists, open Vercel deploy with required env variables
     .then((text) => {
-      let replaced = text.replace(/\s/g, "");
-      let newReplaced = replaced.replace(/=/g, ",");
-      vercelUrl += `&env=${newReplaced}`;
+      let arr = text.replace(/\s/g, "*").split("*"); // delete all whitespace
+      let newReplaced = ""; // get finalized string
+      for (let i = 0; i < arr.length; i++) {
+        arr[i] = arr[i].substr(0, arr[i].indexOf("="));
+        newReplaced += arr[i] + ",";
+      }
+      const finalEnvVars = newReplaced.slice(0, -1);
+      vercelUrl += `&env=${finalEnvVars}`;
       chrome.tabs.update({
         url: vercelUrl,
       });
