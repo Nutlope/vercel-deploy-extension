@@ -29,7 +29,9 @@ chrome.action.onClicked.addListener((tab) => {
         newReplaced += arr[i] + ",";
       }
       const finalEnvVars = newReplaced.slice(0, -1);
-      vercelUrl += `&env=${finalEnvVars}`;
+      if (finalEnvVars.length > 0 && finalEnvVars[0] !== ",") {
+        vercelUrl += `&env=${finalEnvVars}`;
+      }
       chrome.tabs.update({
         url: vercelUrl,
       });
