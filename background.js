@@ -20,10 +20,10 @@ const dynamically_change_icon = (tab) => {
     console.log(chrome.action)
 
     chrome.action.setPopup({ popup: '' })
-    chrome.action.setIcon({ path: { 38: 'icons/vercel-enabled.png' } })
+    chrome.action.setIcon({ path: { 128: 'icons/vercel-enabled.png' } })
   } else {
     chrome.action.setPopup({ popup: 'popups/invalid_url.html' })
-    chrome.action.setIcon({ path: { 38: 'icons/vercel-disabled.png' } })
+    chrome.action.setIcon({ path: { 128: 'icons/vercel-disabled.png' } })
   }
 }
 
