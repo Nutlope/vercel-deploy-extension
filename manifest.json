@@ -6,7 +6,7 @@
   "permissions": ["tabs"],
   "action": {
     "default_title": "Deploy to Vercel",
-    "default_icon": "vercel-logo.png"
+    "default_icon": "vercel.png"
   },
   "background": {
     "matches": ["https://github.com/*"],

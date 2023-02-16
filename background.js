@@ -1,8 +1,3 @@
-// * chrome      - the global namespace for Chrome's extension APIs
-// * action      – the namespace of the specific API we want to use
-// * onClicked   - the event we want to subscribe to
-// * addListener - what we want to do with thsis event
-
 // If tree is in the repoName, we know it's a subrepo. Then we want to edit the repoName to remove 'blob'
 chrome.action.onClicked.addListener((tab) => {
   let vercelUrl =
@@ -14,6 +9,22 @@ chrome.action.onClicked.addListener((tab) => {
   if (repoName.includes("tree/")) {
     repoName = repoName.substr(0, repoName.indexOf("tree/") - 1);
   }
+
+  // If a Vercel deploy button exists in README, grab it instead cause it likely has all the latest env variables
+  let readMeFile = `https://raw.githubusercontent.com/${repoName}/main/README.md`;
+
+  fetch(readMeFile)
+    .then((res) => res.text())
+    .then((text) => {
+      if (text.includes("https://vercel.com/new/clone?")) {
+        const regex = /https:\/\/vercel\.com\/new\/clone.*?\)/;
+        const result = str.match(regex);
+        let newDeployUrl = result[0].slice(0, -1);
+        chrome.tabs.update({
+          url: newDeployUrl,
+        });
+      }
+    });
 
   // Grab .env.example filepath from repo
   let envFile = `https://raw.githubusercontent.com/${repoName}/main/.env.example`;
