@@ -28,21 +28,14 @@ chrome.action.onClicked.addListener(async (tab) => {
 
   for (let fileName of envFileNames) {
     const res = await fetch(envFile + fileName);
-    console.log({ fileName });
-    console.log(res.status);
     if (res.status === 200) {
-      // TODO: Troubleshoot and simplify this logic
       finalEnvFile = envFile + fileName;
-
       let text = await res.text();
-      let arr = text.replace(/\s/g, "*").split("*"); // delete all whitespace
-      let newReplaced = ""; // get finalized string
-      for (let i = 0; i < arr.length; i++) {
-        arr[i] = arr[i].substr(0, arr[i].indexOf("="));
-        newReplaced += arr[i] + ",";
-      }
-      const finalEnvVars = newReplaced.slice(0, -1);
-      console.log({ finalEnvVars });
+      let envArr = text
+        .split("\n") // split the string into an array of lines
+        .filter((line) => line.trim().length > 0 && !line.startsWith("#")) // filter out empty lines and comments
+        .map((line) => line.split("=")[0].trim()); // split each line into name and value, take only the name, and remove leading/trailing whitespace
+      const finalEnvVars = envArr.join(",");
       if (finalEnvVars.length > 0 && finalEnvVars[0] !== ",") {
         vercelUrl += `&env=${finalEnvVars}`;
       }
@@ -58,6 +51,4 @@ chrome.action.onClicked.addListener(async (tab) => {
       url: vercelUrl,
     });
   }
-
-  console.log({ vercelUrl });
 });
