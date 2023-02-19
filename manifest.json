@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Vercel Deploy",
   "description": "Vercel Deploy allows you to deploy any GitHub repo to Vercel in 1 click.",
-  "version": "1.1.0",
+  "version": "2.2.0",
   "permissions": ["tabs"],
   "action": {
     "default_title": "Deploy to Vercel",

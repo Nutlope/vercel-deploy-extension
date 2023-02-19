@@ -1,38 +1,40 @@
 // If tree is in the repoName, we know it's a subrepo. Then we want to edit the repoName to remove 'blob'
-chrome.action.onClicked.addListener((tab) => {
+chrome.action.onClicked.addListener(async (tab) => {
   let vercelUrl =
     "https://vercel.com/new/git/external?repository-url=" + tab.url;
 
-  let repoName = tab.url.substr(19);
+  const repoName = tab.url.split("https://github.com/")[1]; // The shape of this is: "leerob/leerob.io"
+  let fixedRepoName;
+  let envFile;
 
   // If repoName is a subrepo, we want to edit the repoName to remove 'tree'
   if (repoName.includes("tree/")) {
-    repoName = repoName.substr(0, repoName.indexOf("tree/") - 1);
+    let baseUrl = repoName.split("/");
+    baseUrl.splice(2, 1);
+    fixedRepoName = baseUrl.join("/");
+    envFile = `https://raw.githubusercontent.com/${fixedRepoName}/`;
+  } else {
+    envFile = `https://raw.githubusercontent.com/${repoName}/main/`;
   }
 
-  // If a Vercel deploy button exists in README, grab it instead cause it likely has all the latest env variables
-  let readMeFile = `https://raw.githubusercontent.com/${repoName}/main/README.md`;
+  let finalEnvFile;
 
-  fetch(readMeFile)
-    .then((res) => res.text())
-    .then((text) => {
-      if (text.includes("https://vercel.com/new/clone?")) {
-        const regex = /https:\/\/vercel\.com\/new\/clone.*?\)/;
-        const result = str.match(regex);
-        let newDeployUrl = result[0].slice(0, -1);
-        chrome.tabs.update({
-          url: newDeployUrl,
-        });
-      }
-    });
+  let envFileNames = [
+    ".env.example",
+    ".env.local.example",
+    ".env",
+    ".local.env",
+  ];
 
-  // Grab .env.example filepath from repo
-  let envFile = `https://raw.githubusercontent.com/${repoName}/main/.env.example`;
+  for (let fileName of envFileNames) {
+    const res = await fetch(envFile + fileName);
+    console.log({ fileName });
+    console.log(res.status);
+    if (res.status === 200) {
+      // TODO: Troubleshoot and simplify this logic
+      finalEnvFile = envFile + fileName;
 
-  fetch(envFile)
-    .then((res) => res.text())
-    // if the .env file exists, open Vercel deploy with required env variables
-    .then((text) => {
+      let text = await res.text();
       let arr = text.replace(/\s/g, "*").split("*"); // delete all whitespace
       let newReplaced = ""; // get finalized string
       for (let i = 0; i < arr.length; i++) {
@@ -40,17 +42,22 @@ chrome.action.onClicked.addListener((tab) => {
         newReplaced += arr[i] + ",";
       }
       const finalEnvVars = newReplaced.slice(0, -1);
+      console.log({ finalEnvVars });
       if (finalEnvVars.length > 0 && finalEnvVars[0] !== ",") {
         vercelUrl += `&env=${finalEnvVars}`;
       }
       chrome.tabs.update({
         url: vercelUrl,
       });
-    })
-    // if the .example.env file doesn't exist, open Vercel deploy with no env variables
-    .catch((err) => {
-      chrome.tabs.update({
-        url: vercelUrl,
-      });
+      break;
+    }
+  }
+
+  if (!finalEnvFile) {
+    chrome.tabs.update({
+      url: vercelUrl,
     });
+  }
+
+  console.log({ vercelUrl });
 });

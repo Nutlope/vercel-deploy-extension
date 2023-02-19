@@ -15,5 +15,4 @@ This is a Chrome Extension that provides a 1 click deploy to Vercel on any GitHu
 
 ## Need to test
 
-- Need to test the code that grabs url from deploy button
 - Troubleshoot env vars working, re-check this by running the code locally then debugging.
