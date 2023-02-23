@@ -11,4 +11,4 @@ This is a Chrome Extension that provides a 1 click deploy to Vercel on any GitHu
 
 - One click deploy to Vercel for any web-based GitHub repos
 - Works for subrepos such as apps in the [Next.js examples repo](https://github.com/vercel/next.js/tree/canary/examples)
-- Detects env variables if there's a `.env.example` or variations like it and adds them to the Vercel deploy
+- Detects env variables if there's a `.env.example` or other variations like it and adds them to the Vercel deploy
